@@ -9,3 +9,6 @@ Description: pepvaR receives lists of peptides detected in MS experiments and co
 License: CC BY 3.0
 LazyData: TRUE
 RoxygenNote: 5.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr

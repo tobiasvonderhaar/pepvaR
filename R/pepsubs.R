@@ -10,7 +10,13 @@
 #'
 #' @param filename Output filename to be used if save = TRUE. By default,  this will be the date followed by the name of the analysed variable and '.Rds'.
 #'
+#' @examples
 #'
+#' make.var(seq)
+#'
+#' make.var(seq, cutoff = 2, filename = 'test.rds')
+#'
+#' makevar(seq, export = FALSE)
 #'
 #' @return a list containing a dataframe with the tryptic peptide sequence variants as the first list element.
 #'
@@ -18,7 +24,7 @@
 #'
 #' @export
 
-makevar <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') {
+make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') {
 
     #convert sequence to uppercase
   sequence <- toupper(sequence)
@@ -159,7 +165,7 @@ makevar <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') {
 
 #' Export tryptic peptide variants to fasta file
 #'
-#' \code{varfasta} writes the petides in a variant list into a fasta file
+#' \code{save.varfasta} writes the petides in a variant list into a fasta file
 #'
 #' @param sourcevars A list output by the trypvar function.
 #'
@@ -173,7 +179,7 @@ makevar <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') {
 #'
 #' @export
 
-varfasta <- function(infilename, outfilename = 'default') {
+save.varfasta <- function(infilename, outfilename = 'default') {
 
   #check whether filenames exists in the current working directory
   if(!infilename %in% dir()) {paste('\'', infilename, '\' does not exist in the working directory. Note that filenames are case sensitive.', sep = ''); return()}

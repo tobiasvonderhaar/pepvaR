@@ -1,6 +1,6 @@
 #' Read in CSV files containing MS results
 #'
-#' \code{readMS} reads in CSV files with lists of detected peptide variants (typically prepared using the Mass Spec-associated software).
+#' \code{MS.read} reads in CSV files with lists of detected peptide variants (typically prepared using the Mass Spec-associated software).
 #'
 #' @param MSfilename The name of the file containing the MS data.
 #'
@@ -22,7 +22,7 @@
 #'
 #' @export
 
-readMS <- function(MSfilename, scorecutoff = 4.9, scorecol = 9, sequencecol = 10, datarange = 20:37) {
+MS.read <- function(MSfilename, scorecutoff = 4.9, scorecol = 9, sequencecol = 10, datarange = 20:37) {
 
   #conduct quality checks on loadfilename and savefilename: check whether filenames exists in the current working directory
   if(!(MSfilename %in% dir() )) {paste('One or both of the pecified filenames do not exist in the working directory. Note that filenames are case sensitive.', sep = ''); return()}
@@ -56,7 +56,7 @@ readMS <- function(MSfilename, scorecutoff = 4.9, scorecol = 9, sequencecol = 10
 
 #' Sum spectral counts for different ions of the same peptide.
 #'
-#' \code{addMS} sums spectral counts for differently charged ions for the same peptide.
+#' \code{MS.condense} sums spectral counts for differently charged ions for the same peptide.
 #'
 #' @param MSdf A dataframe containing MS data (One column for Sequence, one or more columns for spectral counts).
 #'
@@ -76,7 +76,7 @@ readMS <- function(MSfilename, scorecutoff = 4.9, scorecol = 9, sequencecol = 10
 #'
 
 
-addMS <- function(MSdf, repeats = 3, averagerepeats = TRUE, samplenames = '') {
+MS.condense <- function(MSdf, repeats = 3, averagerepeats = TRUE, samplenames = '') {
 
   #if present remove Score column, which is no longer meaningful for added peptides
   if('Score' %in% colnames(MSdf)) {MSdf <- MSdf[,!(colnames(MSdf) == 'Score')]}
@@ -122,7 +122,7 @@ addMS <- function(MSdf, repeats = 3, averagerepeats = TRUE, samplenames = '') {
 
 #' Add the peptide data to the results list.
 #'
-#' \code{saveMS} loads a peptide file, appends the MS data as a new list item, and saves the file back to its original filename.
+#' \code{MS.save} loads a peptide file, appends the MS data as a new list item, and saves the file back to its original filename.
 #'
 #' @param MSdata The workpace variable containing the clean MS data.
 #'
@@ -137,7 +137,7 @@ addMS <- function(MSdf, repeats = 3, averagerepeats = TRUE, samplenames = '') {
 #' @export
 
 
-saveMS <- function(MSdata, filename) {
+MS.save <- function(MSdata, filename) {
   resultslist = readRDS(filename)
   resultslist[[4]] <- MSdata
   names(resultslist)[4] <- 'MSdata'

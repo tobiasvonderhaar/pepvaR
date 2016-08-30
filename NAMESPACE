@@ -2,9 +2,9 @@
 
 S3method(plot,counts)
 S3method(plot,cover)
-export(addMS)
-export(makevar)
+export(MS.condense)
+export(MS.read)
+export(make.var)
 export(match.subs)
-export(readMS)
+export(save.varfasta)
 export(saveMS)
-export(varfasta)
