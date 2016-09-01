@@ -4,9 +4,9 @@
 #'
 #' @param sequence Character string containig the protein sequence in one letter format
 #'
-#' @param cutoff Peptides shorter than the value stored in cutoff are excluded from the list. Default is 4.
+#' @param cutoff Variant peptides shorter than the value stored in cutoff are excluded from the list. Default is 4. Wild-type peptides are not excluded irrespective of length.
 #'
-#' @param save Boolean defaulting to TRUE. If TRUE, the list structure containing the output file will be written to file.
+#' @param save Boolean defaulting to TRUE. If TRUE, the list structure containing the output will be written to file.
 #'
 #' @param filename Output filename to be used if save = TRUE. By default,  this will be the date followed by the name of the analysed variable and '.Rds'.
 #'

@@ -9,7 +9,7 @@ make.var(sequence, cutoff = 4, export = TRUE, filename = "default")
 \arguments{
 \item{sequence}{Character string containig the protein sequence in one letter format}
 
-\item{cutoff}{Peptides shorter than the value stored in cutoff are excluded from the list. Default is 4.}
+\item{cutoff}{Variant peptides shorter than the value stored in cutoff are excluded from the list. Default is 4. Wild-type peptides are not excluded irrespective of length.}
 
 \item{filename}{Output filename to be used if save = TRUE. By default,  this will be the date followed by the name of the analysed variable and '.Rds'.}
 
