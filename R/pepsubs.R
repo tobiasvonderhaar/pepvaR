@@ -200,7 +200,7 @@ save.varfasta <- function(infilename, outfilename = 'default') {
   sink()
 
   #update the loglist.
-  this.loglist <- data.frame(log.function = as.character(match.call()[[1]]), log.date = format.Date(Sys.Date(), "%y%m%d"), log.time = format(Sys.time(), "%H:%M"), infile = infilename, outfile = outfilename)
+  this.loglist <- data.frame(func = as.character(match.call()[[1]]), date = format.Date(Sys.Date(), "%y%m%d"), time = format(Sys.time(), "%H:%M"), infile = infilename, outfile = outfilename)
   resultslist[[1]] <- rbind(resultslist[[1]], this.loglist)
 
 
