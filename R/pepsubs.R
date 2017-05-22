@@ -169,7 +169,7 @@ make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') 
 #'
 #' @param sourcevars A list output by the trypvar function.
 #'
-#' @param filename The filename of the fasta file. If unspecified, a filename will be conructed based on the input variable name.
+#' @param filename The filename of the fasta file. If unspecified, a filename will be constructed based on the input variable name.
 #'
 #'
 #'
@@ -189,7 +189,7 @@ save.varfasta <- function(infilename, outfilename = 'default') {
 
   #check if outfilename was specified, if not (ie if filename = default) use the filename of the input file but chnge the extension to .fasta.
   if(outfilename =='default') {
-    outfilename = paste(substr(infilename, 0, nchar(varname) - 4), '.fasta', sep = "")
+    outfilename = paste(substr(infilename, 0, nchar(infilename) - 4), '.fasta', sep = "")
   }
 
 
