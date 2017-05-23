@@ -2,7 +2,7 @@
 #' 
 #' \code{plot.cover} Plots the coverage of the protein sequence in terms of observed wild-type peptides, as well as locations of observed substitutions.
 #' 
-#' @param filename The name of the file that contains the Mascot peptide sequences and substitution data.
+#' @param subsdata The name of the file that contains the Mascot peptide sequences and substitution data.
 #' 
 #' 
 #' 
@@ -12,12 +12,10 @@
 #' 
 #' @export
 
-plot.cover <- function(filename){
+plot.cover <- function(subsdata){
  
-  dats <- readRDS(filename)
-  
-  wtpeptides <- as.character(dats$MSdata$Sequence[dats$MSdata$is.wt])
-  seq.length <- nchar(dats$sequence)
+  wtpeptides <- as.character(subsdata$Sequence[subsdata$is.wt])
+  seq.length <- nchar(subsdata$sequence)
   
   #prepare the basic plot window
   plot(c(0,12), c(0,12), type = "n", axes = FALSE, ylab = NA, xlab = NA, asp = 1)
@@ -27,7 +25,7 @@ plot.cover <- function(filename){
   for(n in 1:length(wtpeptides)) {
    
   #extract the location of this peptide in seq
-    location <- gregexpr(wtpeptides[n], dats$sequence)
+    location <- gregexpr(wtpeptides[n], subsdata$sequence)
    
   #plot boxes corresponding to each peptide
     plot.start <- location[[1]][1] / seq.length * 10 + 1
@@ -37,7 +35,7 @@ plot.cover <- function(filename){
   }
   
   #draw ticks at sites of substitutions
-  ticks <- as.numeric(levels(dats$MSdata$Site)[dats$MSdata$Site])
+  ticks <- as.numeric(levels(subsdata$MSdata$Site)[subsdata$MSdata$Site])
   ticks <- unique(ticks[ticks != 0])
   rect((ticks) / seq.length *10 + 1, 2.1, (ticks) / seq.length * 10 + 1, 2.6)
   

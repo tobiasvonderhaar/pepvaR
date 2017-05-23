@@ -11,12 +11,12 @@ make.var(sequence, cutoff = 4, export = TRUE, filename = "default")
 
 \item{cutoff}{Variant peptides shorter than the value stored in cutoff are excluded from the list. Default is 4. Wild-type peptides are not excluded irrespective of length.}
 
-\item{filename}{Output filename to be used if save = TRUE. By default,  this will be the date followed by the name of the analysed variable and '.Rds'.}
+\item{export}{Boolean defaulting to TRUE. If TRUE, the list structure containing the output will be written to file.}
 
-\item{save}{Boolean defaulting to TRUE. If TRUE, the list structure containing the output file will be written to file.}
+\item{filename}{Output filename to be used if export = TRUE. By default,  this will be the date followed by the name of the analysed variable and '.Rds'.}
 }
 \value{
-a list containing a dataframe with the tryptic peptide sequence variants as the first list element.
+A list with three items: [1] a dataframe listing manipulations conducted on this variant list; [2] a character variable containing the original input sequence; and [3] a dataframe containing the tryptic peptide sequence variants.
 }
 \description{
 \code{make.var} generates a list of tryptic peptides and all their possible single amino acid variants from an input protein sequence
@@ -30,4 +30,3 @@ make.var(seq, cutoff = 2, filename = 'test.rds')
 makevar(seq, export = FALSE)
 
 }
-

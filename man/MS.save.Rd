@@ -17,4 +17,3 @@ MS.save(MSdata, filename)
 \description{
 \code{MS.save} loads a peptide file, appends the MS data as a new list item, and saves the file back to its original filename.
 }
-

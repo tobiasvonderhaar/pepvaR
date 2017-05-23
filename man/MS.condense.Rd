@@ -21,4 +21,3 @@ MS.condense(MSdf, repeats = 3, averagerepeats = TRUE, samplenames = "")
 \description{
 \code{MS.condense} sums spectral counts for differently charged ions for the same peptide.
 }
-

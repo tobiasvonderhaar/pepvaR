@@ -15,4 +15,3 @@
 \description{
 \code{plot.cover} Plots the coverage of the protein sequence in terms of observed wild-type peptides, as well as locations of observed substitutions.
 }
-

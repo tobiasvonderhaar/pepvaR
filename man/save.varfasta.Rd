@@ -7,14 +7,13 @@
 save.varfasta(infilename, outfilename = "default")
 }
 \arguments{
-\item{sourcevars}{A list output by the trypvar function.}
+\item{infilename}{A file containing the output from the make.var function.}
 
-\item{filename}{The filename of the fasta file. If unspecified, a filename will be conructed based on the input variable name.}
+\item{outfilename}{The filename of the fasta file. If unspecified, a filename will be constructed based on infilename by replacing the ".Rds" suffix with ".fasta".}
 }
 \value{
-None. The function outputs a fasta-formatted file containing the peptide sequences from the specified variable.
+The function outputs a fasta-formatted file containing the peptide sequences from the specified infile.
 }
 \description{
 \code{save.varfasta} writes the petides in a variant list into a fasta file
 }
-

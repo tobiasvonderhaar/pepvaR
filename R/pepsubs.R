@@ -29,7 +29,7 @@ make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') 
     #convert sequence to uppercase
   sequence <- toupper(sequence)
 
-  #prepare background variables. noncutsites contains all non-cutting aminoacids, cutsites contains the cut sites.
+  #prepare background variables. noncutters contains all non-cutting aminoacids, cutters contains the peptidase cut sites.
   noncutters <- c('A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'L', 'M', 'N', 'P', 'Q', 'S', 'T', 'V', 'W', 'Y')
   cutters <- c('K', 'R')
 
@@ -43,56 +43,64 @@ make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') 
   #if the last amino acid is a K or R this introduces two cutsites at length(sequence), test for this and remove the last site if appropriate
   if(cutsites[length(cutsites)] == cutsites[length(cutsites)-1]) {cutsites <- cutsites[1:(length(cutsites)-1)]}
 
+  #construct a data.frame to hold data for ther wild-type peptides
   wtpeptides <- as.data.frame(mat.or.vec(length(cutsites)-1,3))
-  colnames(wtpeptides) <- c('ID', 'Sequence', 'Type')
+  colnames(wtpeptides) <- c('ID', 'Sequence', 'SubSite')
 
+  #populate the wt-peptide dataframe
   for (n in 1:(length(cutsites)-1)) {
     wtpeptides[n,1] <- paste('wt', n, sep = "")
     wtpeptides[n,2] <- substr(sequence, cutsites[n] + 1, cutsites[n+1])
-    wtpeptides[n,3] <- 'wt'
+    wtpeptides[n,3] <- 0
   }
 
   rm(splitseq, n, cutsites)
 
-  # generate the possible single amio acid substitutions for all peptides
-  peptidecounter <- 1
-  mutpeptides <- wtpeptides[1,]; mutpeptides[1,] <- c('','','')
+  ### generate the possible single amio acid substitutions for all peptides ###
+  
+  #set up data frame for variant peptides by copying the first row from wt-peptides and deleting the wt data
+  mutpeptides <- wtpeptides[1,]; mutpeptides[1,] <- c('','',0)
 
-  #1: process the loop for all wt peptides
+  #process the loop for all wt peptides
+  peptidecounter <- 1
   for (n in 1:dim(wtpeptides)[1]) {
-    #2: do straightforward 1:1 swaps for all peptides >cutoff, at all position except the terminal position (a change here woudl affect the cut site and this isprocessed separately in step below).
-    # Do not process substitutions to K or R which would introduce additional cut sites and would shorten the peptide.
-    # Go through m = all letters in the peptide except the last which is K or R.
+    #Do straightforward 1:1 swaps for all peptides >cutoff, at all position except the terminal position (a change here would affect the cut site and this is processed separately in step below).
+    #Do not process substitutions to K or R which would introduce additional cut sites and would shorten the peptide.
+    #Go through m = all letters in the peptide except the last which is K or R.
     for (m in 1:(nchar(wtpeptides[n,2])-1)) {
-      #Go through all elements of aminoacids1.
+      #determine the number of the site that is being processed
+      subSite <- as.numeric(gregexpr(pattern=wtpeptides[n,"Sequence"],sequence)[[1]][1]) + m - 1
+      #Go through all elements of noncutters
       for (o in 1:length(noncutters)) {
         mutpeptides[peptidecounter,"ID"] <- paste(wtpeptides[n,"ID"], "var", peptidecounter, sep = "")
         mutpeptides[peptidecounter,"Sequence"] <- paste(substr(wtpeptides[n,"Sequence"], 0, m-1), noncutters[o], substr(wtpeptides[n,"Sequence"], m+1, nchar(wtpeptides[n,"Sequence"])), sep="")
-        mutpeptides[peptidecounter,"Type"] <- 'variant'
+        mutpeptides[peptidecounter,"SubSite"] <- subSite
         peptidecounter <- peptidecounter + 1
       }
       # for substitutions to K or R, substitute and then end the peptide as this introduces a new cut site
       for (p in 1:length(cutters)) {
         mutpeptides[peptidecounter,"ID"] <- paste(wtpeptides[n,"ID"], "var", peptidecounter, sep = "")
         mutpeptides[peptidecounter,"Sequence"] <- paste(substr(wtpeptides[n, "Sequence"], 0, m-1), cutters[p], sep="")
-        mutpeptides[peptidecounter,"Type"] <- 'variant'
+        mutpeptides[peptidecounter,"SubSite"] <- subSite
         peptidecounter <- peptidecounter + 1
       }
     }
     #process the last amino acid of each peptide
     #if the last amino acid is not K or R (this is the case for the C-terminal peptide of the protein), plain subsitute this
     m = nchar(wtpeptides[n,"Sequence"])
+    #determine the number of the site that is being processed
+    subSite <- as.numeric(gregexpr(pattern=wtpeptides[n,"Sequence"],sequence)[[1]][1]) + m - 1
     if(substr(wtpeptides[n,"Sequence"], nchar(wtpeptides[n,"Sequence"]), nchar(wtpeptides[n,"Sequence"])) %in% noncutters) {
       for (o in 1:length(noncutters)) {
         mutpeptides[peptidecounter,"ID"] <- paste(wtpeptides[n,"ID"], "var", peptidecounter, sep = "")
         mutpeptides[peptidecounter,"Sequence"] <- paste(substr(wtpeptides[n,"Sequence"], 0, m-1), noncutters[o], sep="")
-        mutpeptides[peptidecounter,"Type"] <- 'variant'
+        mutpeptides[peptidecounter,"SubSite"] <- subSite
         peptidecounter <- peptidecounter + 1
       }
       for (p in 1:length(cutters)) {
         mutpeptides[peptidecounter,"ID"] <- paste(wtpeptides[n,"ID"], "var", peptidecounter, sep = "")
         mutpeptides[peptidecounter,"Sequence"] <- paste(substr(wtpeptides[n,"Sequence"], 0, m-1), cutters[p], sep="")
-        mutpeptides[peptidecounter,"Type"] <- 'variant'
+        mutpeptides[peptidecounter,"SubSite"] <- subSite
         peptidecounter <- peptidecounter + 1
       }
     } else {
@@ -104,7 +112,7 @@ make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') 
         for (o in 1:length(noncutters)) {
           mutpeptides[peptidecounter,"ID"] <- paste(wtpeptides[n,"ID"], "var", peptidecounter, sep = "")
           mutpeptides[peptidecounter,"Sequence"] <- paste(substr(wtpeptides[n,"Sequence"], 0, m-1), noncutters[o], sep="")
-          mutpeptides[peptidecounter,"Type"] <- 'variant'
+          mutpeptides[peptidecounter,"SubSite"] <- nchar(sequence)
           peptidecounter <- peptidecounter + 1
         }
       }
@@ -114,7 +122,7 @@ make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') 
         for (o in 1:length(noncutters)) {
           mutpeptides[peptidecounter,"ID"] <- paste(wtpeptides[n,"ID"], "var", peptidecounter, sep = "")
           mutpeptides[peptidecounter,"Sequence"] <- paste(substr(wtpeptides[n,"Sequence"], 0, m-1), noncutters[o], wtpeptides[n + 1,"Sequence"], sep="")
-          mutpeptides[peptidecounter,"Type"] <- 'variant'
+          mutpeptides[peptidecounter,"SubSite"] <- subSite
           peptidecounter <- peptidecounter + 1
         }
       }
@@ -122,7 +130,7 @@ make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') 
         for (p in 1:length(cutters)) {
           mutpeptides[peptidecounter,"ID"] <- paste(wtpeptides[n,"ID"], "var", peptidecounter, sep = "")
           mutpeptides[peptidecounter,"Sequence"] <- paste(substr(wtpeptides[n,"Sequence"], 0, m-1), cutters[p], sep="")
-          mutpeptides[peptidecounter,"Type"] <- 'variant'
+          mutpeptides[peptidecounter,"SubSite"] <- subSite
           peptidecounter <- peptidecounter + 1
         }
     }

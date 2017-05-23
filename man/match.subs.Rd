@@ -17,4 +17,3 @@ match.subs(filename, save = TRUE)
 \description{
 \code{match.subs} takes the list of observed peptides and maps sites of substitutions to the protein sequence.
 }
-

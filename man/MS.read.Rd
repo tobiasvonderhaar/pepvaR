@@ -2,28 +2,25 @@
 % Please edit documentation in R/pepclean.R
 \name{MS.read}
 \alias{MS.read}
-\title{Read in CSV files containing MS results}
+\title{Read in MS results from files or data frames}
 \usage{
-MS.read(MSfilename, scorecutoff = 4.9, scorecol = 9, sequencecol = 10,
-  datarange = 20:37)
+MS.read(MSfilename, scorecutoff = 4.9, scorecol = 8, sequencecol = 9,
+  datarange = 11:28)
 }
 \arguments{
-\item{MSfilename}{The name of the file containing the MS data.}
+\item{MSfilename}{The name of the dataframe or file containing the MS data.}
 
-\item{scorecutoff}{The score value below which detected peptides are excluded from the analysis.}
+\item{scorecutoff}{The MASCOT score value below which detected peptides are excluded from the analysis (4.9 if not specified).}
 
 \item{scorecol}{The number of the column containg the MASCOT scores.}
 
 \item{sequencecol}{The number of the column containing the sequences of the detected peptides.}
 
-\item{datarange}{The numbers of the columns containing the spectral counts for the detected peptides.}
-
-\item{pepfilename}{The name of the .Rds file containing the peptide list with which the MS data were generated. MS data are added as a new list item.}
+\item{datarange}{The numbers of the columns containing the spectral counts for the detected peptides (one column per sample)}
 }
 \value{
 
 }
 \description{
-\code{MS.read} reads in CSV files with lists of detected peptide variants (typically prepared using the Mass Spec-associated software).
+\code{MS.read} reads in peptide information from a dataframe located in the workspace, or from a .csv file located in the working directory.
 }
-
