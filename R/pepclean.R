@@ -1,18 +1,16 @@
-#' Read in CSV files containing MS results
+#' Read in MS results from files or data frames
 #'
-#' \code{MS.read} reads in CSV files with lists of detected peptide variants (typically prepared using the Mass Spec-associated software).
+#' \code{MS.read} reads in peptide information from a dataframe located in the workspace, or from a .csv file located in the working directory.
 #'
-#' @param MSfilename The name of the file containing the MS data.
+#' @param MSfilename The name of the dataframe or file containing the MS data.
 #'
-#' @param pepfilename The name of the .Rds file containing the peptide list with which the MS data were generated. MS data are added as a new list item.
-#'
-#' @param scorecutoff The score value below which detected peptides are excluded from the analysis.
+#' @param scorecutoff The MASCOT score value below which detected peptides are excluded from the analysis (4.9 if not specified).
 #'
 #' @param scorecol The number of the column containg the MASCOT scores.
 #'
 #' @param sequencecol The number of the column containing the sequences of the detected peptides.
 #'
-#' @param datarange The numbers of the columns containing the spectral counts for the detected peptides.
+#' @param datarange The numbers of the columns containing the spectral counts for the detected peptides (one column per sample)
 #'
 #'
 #'
@@ -22,27 +20,31 @@
 #'
 #' @export
 
-MS.read <- function(MSfilename, scorecutoff = 4.9, scorecol = 9, sequencecol = 10, datarange = 20:37) {
+MS.read <- function(MSfilename, scorecutoff = 4.9, scorecol = 8, sequencecol = 9, datarange = 11:28) {
 
-  #conduct quality checks on loadfilename and savefilename: check whether filenames exists in the current working directory
-  if(!(MSfilename %in% dir() )) {paste('One or both of the pecified filenames do not exist in the working directory. Note that filenames are case sensitive.', sep = ''); return()}
+  if(MSfilename == 'MSdata' | MSfilename %in% ls()) {
+    eval(parse(text=paste('MSframe <- ', MSfilename, sep = '')))
+  } else {
+    if(MSfilename %in% dir()) {
+      MSframe <- read.csv(MSfilename)
+    } else {
+      paste('The specified name does not correspond to a variable in the workspace or a file in the working directory. Names are case sensitive.', sep = ''); return()}
+  }
 
-  MSframe <- read.csv(MSfilename)
-
-  #only retain the columns for score, pepides sequence, and spectral counts.
+  #only retain the columns for scores, peptide sequences, and spectral counts.
   MSframe = MSframe[,c(scorecol, sequencecol, datarange)]
 
-  #Convert values from the Score column from facor to numeric
+  #Convert values from the Score column from factor to numeric
   scores <- as.numeric(levels(MSframe$Score))[MSframe$Score]
 
-  #Remove all rows where score is NA from MSframe
+  #Remove all rows where score is NA from MSframe and from scores
   MSframe <- MSframe[!is.na(scores),]
   scores <- na.omit(scores)
 
-  #Remove all rows with score <5 from MSframe
+  #Remove all rows with score <scoreutoff from MSframe
   MSframe <- MSframe[scores >= scorecutoff,]
 
-  #remove all peptides here for mltiple pepides idenical values have been reported for all samples (these are artefacts).
+  #remove all peptides where multiple identical values have been reported for all samples for multiple peptides (these are artefacts).
   SConly <- MSframe[,3:ncol(MSframe)]
   MSframe <- MSframe[rownames(MSframe) %in% rownames(unique(SConly)),]
 

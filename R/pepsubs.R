@@ -6,9 +6,9 @@
 #'
 #' @param cutoff Variant peptides shorter than the value stored in cutoff are excluded from the list. Default is 4. Wild-type peptides are not excluded irrespective of length.
 #'
-#' @param save Boolean defaulting to TRUE. If TRUE, the list structure containing the output will be written to file.
+#' @param export Boolean defaulting to TRUE. If TRUE, the list structure containing the output will be written to file.
 #'
-#' @param filename Output filename to be used if save = TRUE. By default,  this will be the date followed by the name of the analysed variable and '.Rds'.
+#' @param filename Output filename to be used if export = TRUE. By default,  this will be the date followed by the name of the analysed variable and '.Rds'.
 #'
 #' @examples
 #'
@@ -18,7 +18,7 @@
 #'
 #' makevar(seq, export = FALSE)
 #'
-#' @return a list containing a dataframe with the tryptic peptide sequence variants as the first list element.
+#' @return A list with three items: [1] a dataframe listing manipulations conducted on this variant list; [2] a character variable containing the original input sequence; and [3] a dataframe containing the tryptic peptide sequence variants.
 #'
 #'
 #'
@@ -167,13 +167,13 @@ make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') 
 #'
 #' \code{save.varfasta} writes the petides in a variant list into a fasta file
 #'
-#' @param sourcevars A list output by the trypvar function.
+#' @param infilename A file containing the output from the make.var function.
 #'
-#' @param filename The filename of the fasta file. If unspecified, a filename will be constructed based on the input variable name.
+#' @param outfilename The filename of the fasta file. If unspecified, a filename will be constructed based on infilename by replacing the ".Rds" suffix with ".fasta".
 #'
 #'
 #'
-#' @return None. The function outputs a fasta-formatted file containing the peptide sequences from the specified variable.
+#' @return The function outputs a fasta-formatted file containing the peptide sequences from the specified infile.
 #'
 #'
 #'
