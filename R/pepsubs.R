@@ -44,14 +44,16 @@ make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') 
   if(cutsites[length(cutsites)] == cutsites[length(cutsites)-1]) {cutsites <- cutsites[1:(length(cutsites)-1)]}
 
   #construct a data.frame to hold data for ther wild-type peptides
-  wtpeptides <- as.data.frame(mat.or.vec(length(cutsites)-1,3))
-  colnames(wtpeptides) <- c('ID', 'Sequence', 'SubSite')
+  wtpeptides <- as.data.frame(mat.or.vec(length(cutsites)-1,5))
+  colnames(wtpeptides) <- c('ID', 'Sequence', 'SubSite', 'Expected', 'Observed')
 
   #populate the wt-peptide dataframe
   for (n in 1:(length(cutsites)-1)) {
     wtpeptides[n,1] <- paste('wt', n, sep = "")
     wtpeptides[n,2] <- substr(sequence, cutsites[n] + 1, cutsites[n+1])
     wtpeptides[n,3] <- 0
+    wtpeptides[n,4] <- ''
+    wtpeptides[n,5] <- ''
   }
 
   rm(splitseq, n, cutsites)
@@ -59,7 +61,7 @@ make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') 
   ### generate the possible single amio acid substitutions for all peptides ###
   
   #set up data frame for variant peptides by copying the first row from wt-peptides and deleting the wt data
-  mutpeptides <- wtpeptides[1,]; mutpeptides[1,] <- c('','',0)
+  mutpeptides <- wtpeptides[1,]; mutpeptides[1,] <- c('','',0,'','')
 
   #process the loop for all wt peptides
   peptidecounter <- 1
@@ -75,6 +77,8 @@ make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') 
         mutpeptides[peptidecounter,"ID"] <- paste(wtpeptides[n,"ID"], "var", peptidecounter, sep = "")
         mutpeptides[peptidecounter,"Sequence"] <- paste(substr(wtpeptides[n,"Sequence"], 0, m-1), noncutters[o], substr(wtpeptides[n,"Sequence"], m+1, nchar(wtpeptides[n,"Sequence"])), sep="")
         mutpeptides[peptidecounter,"SubSite"] <- subSite
+        mutpeptides[peptidecounter,"Expected"] <- substr(wtpeptides[n,"Sequence"],m,m)
+        mutpeptides[peptidecounter,"Observed"] <- noncutters[o]
         peptidecounter <- peptidecounter + 1
       }
       # for substitutions to K or R, substitute and then end the peptide as this introduces a new cut site
@@ -82,6 +86,8 @@ make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') 
         mutpeptides[peptidecounter,"ID"] <- paste(wtpeptides[n,"ID"], "var", peptidecounter, sep = "")
         mutpeptides[peptidecounter,"Sequence"] <- paste(substr(wtpeptides[n, "Sequence"], 0, m-1), cutters[p], sep="")
         mutpeptides[peptidecounter,"SubSite"] <- subSite
+        mutpeptides[peptidecounter,"Expected"] <- substr(wtpeptides[n,"Sequence"],m,m)
+        mutpeptides[peptidecounter,"Observed"] <- cutters[p]
         peptidecounter <- peptidecounter + 1
       }
     }
@@ -95,12 +101,16 @@ make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') 
         mutpeptides[peptidecounter,"ID"] <- paste(wtpeptides[n,"ID"], "var", peptidecounter, sep = "")
         mutpeptides[peptidecounter,"Sequence"] <- paste(substr(wtpeptides[n,"Sequence"], 0, m-1), noncutters[o], sep="")
         mutpeptides[peptidecounter,"SubSite"] <- subSite
+        mutpeptides[peptidecounter,"Expected"] <- substr(wtpeptides[n,"Sequence"],m,m)
+        mutpeptides[peptidecounter,"Observed"] <- noncutters[o]
         peptidecounter <- peptidecounter + 1
       }
       for (p in 1:length(cutters)) {
         mutpeptides[peptidecounter,"ID"] <- paste(wtpeptides[n,"ID"], "var", peptidecounter, sep = "")
         mutpeptides[peptidecounter,"Sequence"] <- paste(substr(wtpeptides[n,"Sequence"], 0, m-1), cutters[p], sep="")
         mutpeptides[peptidecounter,"SubSite"] <- subSite
+        mutpeptides[peptidecounter,"Expected"] <- substr(wtpeptides[n,"Sequence"],m,m)
+        mutpeptides[peptidecounter,"Observed"] <- cutters[p]
         peptidecounter <- peptidecounter + 1
       }
     } else {
@@ -113,6 +123,8 @@ make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') 
           mutpeptides[peptidecounter,"ID"] <- paste(wtpeptides[n,"ID"], "var", peptidecounter, sep = "")
           mutpeptides[peptidecounter,"Sequence"] <- paste(substr(wtpeptides[n,"Sequence"], 0, m-1), noncutters[o], sep="")
           mutpeptides[peptidecounter,"SubSite"] <- nchar(sequence)
+          mutpeptides[peptidecounter,"Expected"] <- substr(wtpeptides[n,"Sequence"],m,m)
+          mutpeptides[peptidecounter,"Observed"] <- noncutters[o]
           peptidecounter <- peptidecounter + 1
         }
       }
@@ -123,6 +135,8 @@ make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') 
           mutpeptides[peptidecounter,"ID"] <- paste(wtpeptides[n,"ID"], "var", peptidecounter, sep = "")
           mutpeptides[peptidecounter,"Sequence"] <- paste(substr(wtpeptides[n,"Sequence"], 0, m-1), noncutters[o], wtpeptides[n + 1,"Sequence"], sep="")
           mutpeptides[peptidecounter,"SubSite"] <- subSite
+          mutpeptides[peptidecounter,"Expected"] <- substr(wtpeptides[n,"Sequence"],m,m)
+          mutpeptides[peptidecounter,"Observed"] <- noncutters[o]
           peptidecounter <- peptidecounter + 1
         }
       }
@@ -131,6 +145,8 @@ make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') 
           mutpeptides[peptidecounter,"ID"] <- paste(wtpeptides[n,"ID"], "var", peptidecounter, sep = "")
           mutpeptides[peptidecounter,"Sequence"] <- paste(substr(wtpeptides[n,"Sequence"], 0, m-1), cutters[p], sep="")
           mutpeptides[peptidecounter,"SubSite"] <- subSite
+          mutpeptides[peptidecounter,"Expected"] <- substr(wtpeptides[n,"Sequence"],m,m)
+          mutpeptides[peptidecounter,"Observed"] <- cutters[p]
           peptidecounter <- peptidecounter + 1
         }
     }
@@ -157,7 +173,7 @@ make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') 
   if(export) {
     if(filename =='default') {
       varname <- as.list(match.call())[[2]]
-      filename = paste(as.character(format.Date(Sys.Date(), "%y%m%d")), ' ', varname, '.Rds', sep = "")
+      filename = paste(as.character(format.Date(Sys.Date(), "%y%m%d")), ' ', varname, ' variants.Rds', sep = "")
       while(filename %in% dir()) {filename <- paste(strsplit(filename, '[.]')[[1]][1], '_.', strsplit(filename, '[.]')[[1]][2], sep = "")}
       resultslist[[1]]$outfile <- filename
     }
@@ -173,7 +189,7 @@ make.var <- function(sequence, cutoff = 4, export = TRUE, filename = 'default') 
 
 #' Export tryptic peptide variants to fasta file
 #'
-#' \code{save.varfasta} writes the petides in a variant list into a fasta file
+#' \code{save.varfasta} writes the peptides in a variant list into a fasta file
 #'
 #' @param infilename A file containing the output from the make.var function.
 #'
@@ -212,6 +228,48 @@ save.varfasta <- function(infilename, outfilename = 'default') {
   resultslist[[1]] <- rbind(resultslist[[1]], this.loglist)
 
 
+  #write the updated .Rds file back to disk
+  saveRDS(resultslist, infilename)
+}
+
+
+
+#' Export tryptic peptide variants to fasta file
+#'
+#' \code{save.varcsv} writes the peptides in a variant list into a fasta file
+#'
+#' @param infilename A file containing the output from the make.var function.
+#'
+#' @param outfilename The filename of the csv file. If unspecified, a filename will be constructed based on infilename by replacing the ".Rds" suffix with ".csv".
+#'
+#'
+#'
+#' @return The function outputs a csv file containing the peptide sequences and details (site and nature of the substitution) from the specified infile.
+#'
+#'
+#'
+#' @export
+
+save.varcsv <- function(infilename, outfilename = 'default') {
+  #check whether filenames exists in the current working directory
+  if(!infilename %in% dir()) {paste('\'', infilename, '\' does not exist in the working directory. Note that filenames are case sensitive.', sep = ''); return()}
+  
+  #read in the .Rds file
+  resultslist <- readRDS(infilename)
+  
+  #check if outfilename was specified, if not (ie if filename = default) use the filename of the input file but chnge the extension to .fasta.
+  if(outfilename =='default') {
+    outfilename = paste(substr(infilename, 0, nchar(infilename) - 4), '.csv', sep = "")
+  }
+  
+  #save the dataframe as a .csv file
+  write.csv(resultslist[[3]], outfilename)
+  
+  #update the loglist.
+  this.loglist <- data.frame(func = as.character(match.call()[[1]]), date = format.Date(Sys.Date(), "%y%m%d"), time = format(Sys.time(), "%H:%M"), infile = infilename, outfile = outfilename)
+  resultslist[[1]] <- rbind(resultslist[[1]], this.loglist)
+  
+  
   #write the updated .Rds file back to disk
   saveRDS(resultslist, infilename)
 }

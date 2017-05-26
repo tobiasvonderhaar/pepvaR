@@ -30,3 +30,4 @@ make.var(seq, cutoff = 2, filename = 'test.rds')
 makevar(seq, export = FALSE)
 
 }
+

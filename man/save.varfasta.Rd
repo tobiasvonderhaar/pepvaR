@@ -15,5 +15,6 @@ save.varfasta(infilename, outfilename = "default")
 The function outputs a fasta-formatted file containing the peptide sequences from the specified infile.
 }
 \description{
-\code{save.varfasta} writes the petides in a variant list into a fasta file
+\code{save.varfasta} writes the peptides in a variant list into a fasta file
 }
+

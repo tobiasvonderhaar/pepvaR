@@ -1,4 +1,4 @@
-#' Plot the coverage in terms of wild-type peptides
+#' Plot the coverage in terms of wild-type peptides from a file produced by MS.load()
 #' 
 #' \code{plot.cover} Plots the coverage of the protein sequence in terms of observed wild-type peptides, as well as locations of observed substitutions.
 #' 
@@ -12,42 +12,56 @@
 #' 
 #' @export
 
-plot.cover <- function(subsdata){
+plot.cover <- function(infile){
+  
+  #check whether there is a file corresponding to infilename in the curren working directory
+  
+  if(!infilename %in% dir()) {
+    cat('There is no file called', infilename, 'in the current working directory')
+    return() 
+  }
  
-  wtpeptides <- as.character(subsdata$Sequence[subsdata$is.wt])
-  seq.length <- nchar(subsdata$sequence)
+  #read in the MS data from the specified file
+  subsdata <- readRDS(infile)[[2]]
+  #recover the original protein sequence by retrieving it from the variant file used to generate infile
+  sequence <- readRDS(readRDS(infile)[[1]]$infile)[[2]]
+  
+  #recover the wild-type sequences and their average spectral abundancesfrom the MS file (those that have a SubSite value of 0 ie no substitution)
+  wtpeptides <- as.character(subsdata$peptides[subsdata$SubSite == 0])
+  wtabundances <- log(rowMeans(subsdata[subsdata$SubSite == 0,6:23]))
+  wtabundances <- (wtabundances - min(wtabundances))/(max(wtabundances)-min(wtabundances))
+  
+  #determine the length of the source sequence
+  seq.length <- nchar(sequence)
+  
+  
+  #extract the position of the first amino acid of the peptides in the sequence
+  pep.start <- mat.or.vec(length(wtpeptides),1)
+  for(n in 1:length(wtpeptides)) {
+    pep.start[n] <- as.numeric(gregexpr(pattern = wtpeptides[n], sequence))
+  }
+  #determine the position of the last amino acid of each peptide
+  pep.stop <- pep.start + nchar(wtpeptides)
   
   #prepare the basic plot window
-  plot(c(0,12), c(0,12), type = "n", axes = FALSE, ylab = NA, xlab = NA, asp = 1)
-  rect(1,1,11,2, col = 'grey75', border = NA)
+  plot(c(0,seq.length * 1.2), c(0,8), type = "n", axes = FALSE, ylab = NA, xlab = NA)
+  rect(seq.length * 0.1,1,seq.length * 1.1,2, col = 'grey75', border = NA)
   
-  #draw boxes for the wild-type coverage
-  for(n in 1:length(wtpeptides)) {
-   
-  #extract the location of this peptide in seq
-    location <- gregexpr(wtpeptides[n], subsdata$sequence)
-   
-  #plot boxes corresponding to each peptide
-    plot.start <- location[[1]][1] / seq.length * 10 + 1
-    plot.end <- (location[[1]][1] / seq.length + attributes(location[[1]])$match.length / seq.length) * 10 + 1
-    rect(plot.start,1,plot.end,2, col= 'black', border = 'white')
-    rm(location)
-  }
+  
+  #plot boxes corresponding to the peptides, coloured accroding to their abundance values
+  colfunc <- colorRamp(c('blue','yellow'))
+  colvec <- rgb(colfunc(wtabundances), maxColorValue=255)
+  rect(pep.start + seq.length*0.1,1,pep.stop + seq.length*0.1,2, col= colvec, border = 'white')
   
   #draw ticks at sites of substitutions
-  ticks <- as.numeric(levels(subsdata$MSdata$Site)[subsdata$MSdata$Site])
-  ticks <- unique(ticks[ticks != 0])
-  rect((ticks) / seq.length *10 + 1, 2.1, (ticks) / seq.length * 10 + 1, 2.6)
+  ticks <- as.numeric(unique(subsdata$SubSite[!subsdata$SubSite == 0]))
+  rect(ticks + (seq.length * 0.1), 2.1, ticks + (seq.length * 0.1), 2.6)
   
   #add axes labels
-  rect(1,0.5,1,1); text(1,0.4, '0', adj = c(0.5,1))
-  rect(11,0.5,11,1); text(11,0.4, as.character(nchar(dats$sequence)), adj = c(0.5,1))
-  text(6,0.4, 'Codon Number', adj = c(0.5,1))
+  rect(seq.length * 0.1,0.5,seq.length * 0.1,1); text(seq.length * 0.1 ,0.4, '0', adj = c(0.5,1))
+  rect(seq.length * 1.1,0.5,seq.length * 1.1,1); text(seq.length * 1.1,0.4, as.character(seq.length), adj = c(0.5,1))
+  text(seq.length * 0.6, 0.4, 'Codon Number', adj = c(0.5,1))
   
-  #add legend
-  rect(2,4,2.5,4.5, col='grey75'); text(2.6, 4.25, 'WT Peptide not detected', adj = c(0,0.5))
-  rect(2,5,2.5,5.5, col='black'); text(2.6, 5.25, 'WT Peptide detected', adj = c(0,0.5))
-  rect(2.25,6,2.25,6.5); text(2.6,6.25, 'Substitution Observed', adj = c(0,0.5))
 }
 
 #' Plot the relative spectral counts for sustitute peptides

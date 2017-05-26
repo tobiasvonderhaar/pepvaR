@@ -5,10 +5,13 @@ Version: 0.1
 Date: 2016-08-30
 Author: Tobias von der Haar
 Maintainer: Tobias von der Haar <tv@kent.ac.uk>
-Description: pepvaR receives lists of peptides detected in MS experiments and compares them to an input protein sequences. It can detect, map, and partially quantify amino acid substitutions resulting from inaccurate protein synthesis.
+Description: pepvaR receives lists of peptides detected in MS experiments and
+    compares them to an input protein sequences. It can detect, map, and partially
+    quantify amino acid substitutions resulting from inaccurate protein synthesis.
 License: CC BY 3.0
 LazyData: TRUE
-RoxygenNote: 6.0.1
-Suggests: knitr,
+RoxygenNote: 5.0.1
+Suggests:
+    knitr,
     rmarkdown
 VignetteBuilder: knitr

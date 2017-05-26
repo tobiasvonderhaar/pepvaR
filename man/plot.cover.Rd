@@ -2,12 +2,12 @@
 % Please edit documentation in R/pepplot.R
 \name{plot.cover}
 \alias{plot.cover}
-\title{Plot the coverage in terms of wild-type peptides}
+\title{Plot the coverage in terms of wild-type peptides from a file produced by MS.load()}
 \usage{
-\method{plot}{cover}(filename)
+\method{plot}{cover}(infile)
 }
 \arguments{
-\item{filename}{The name of the file that contains the Mascot peptide sequences and substitution data.}
+\item{subsdata}{The name of the file that contains the Mascot peptide sequences and substitution data.}
 }
 \value{
 
@@ -15,3 +15,4 @@
 \description{
 \code{plot.cover} Plots the coverage of the protein sequence in terms of observed wild-type peptides, as well as locations of observed substitutions.
 }
+

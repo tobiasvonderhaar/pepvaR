@@ -17,3 +17,4 @@
 \description{
 \code{plot.counts} Plots cumulative bar graphs for spectral counts of substituted peptides, normalised to the corresponding wild type peptide.
 }
+
